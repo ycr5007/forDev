@@ -1,0 +1,54 @@
+{% extends 'base.html' %} {% load static %}
+<!-- Content 시작 -->
+{% block content %}
+<div class="content">
+  <!-- 태그 통계 -->
+  <div class="d-flex justify-content-between">
+    <div style="width= 1px; border: 1px solid black"></div>
+    <div>
+      <h1>태그 통계</h1>
+      <div style="width: 250px; height: 250px"></div>
+    </div>
+    <div style="width= 1px; border: 2px solid black"></div>
+    <div>
+      <h1>태그 단어</h1>
+      <div style="width: 250px; height: 250px"></div>
+    </div>
+    <div style="width= 1px; border: 1px solid black"></div>
+  </div>
+  <!-- 태그 통계 -->
+
+  <div class="container">
+    <div class="accordion" id="bbs">
+      {% for board in board_list %}
+      <div id="heading-{{board.id}}">
+        <h2 class="mb-0">
+          <button class="btn btn-block text-left bbs" type="button" data-toggle="collapse" data-target="#collapse-{{board.id}}" aria-expanded="true" aria-controls="collapse-{{board.id}}">
+            <div class="media">
+              <img src="{% static 'img/default.png' %}" class="mr-3 profile-img" width="85" height="85" />
+              <div class="media-body">
+                <div class="row">
+                  <p class="col-lg-2">LIKE <span class="badge badge-pill badge-primary">{{board.like.count}}</span></p>
+                  <h5 class="col-lg-8 mt-0 font-weight-bolder">{{board.title}}</h5>
+                  <p class="col-lg-2 text-center font-weight-bolder">{{board.writer.username}}</p>
+                </div>
+                <div class="row">
+                  <p class="col-lg-6 font-weight-lighter">#abc #java #python 태그반복 필요</p>
+                  <p class="col-lg-4">{{board_created}}</p>
+                </div>
+              </div>
+            </div>
+          </button>
+        </h2>
+      </div>
+      <div id="collapse-{{board.id}}" class="collapse" aria-labelledby="heading-{{board.id}}" data-parent="#bbs">
+        <div class="card-body">{{board.content}}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %} {% block script %}
+<script src="{% static 'js/infinite-scroll.js' %}"></script>
+<script></script>
+{% endblock %}
