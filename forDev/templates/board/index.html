@@ -1,54 +1,152 @@
 {% extends 'base.html' %} {% load static %}
+<!-- style -->
+{% block style %}
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
+{% endblock %}
+
 <!-- Content 시작 -->
 {% block content %}
-<div class="content">
-  <!-- 태그 통계 -->
-  <div class="d-flex justify-content-between">
-    <div style="width= 1px; border: 1px solid black"></div>
-    <div>
-      <h1>태그 통계</h1>
-      <div style="width: 250px; height: 250px"></div>
+<div class="content accordion" id="bbs"></div>
+<div class="card side-btn">
+  <div class="card-body">
+    <div class="btn-row">
+      <button type="button" class="btn btn-outline-primary m-2 btn-block side-menu" data-toggle="modal" data-target="#staticBackdrop">New</button>
     </div>
-    <div style="width= 1px; border: 2px solid black"></div>
-    <div>
-      <h1>태그 단어</h1>
-      <div style="width: 250px; height: 250px"></div>
+    <div class="btn-row">
+      <a class="btn btn-outline-primary m-2 btn-block side-menu" href="#">Top</a>
     </div>
-    <div style="width= 1px; border: 1px solid black"></div>
-  </div>
-  <!-- 태그 통계 -->
-
-  <div class="container">
-    <div class="accordion" id="bbs">
-      {% for board in board_list %}
-      <div id="heading-{{board.id}}">
-        <h2 class="mb-0">
-          <button class="btn btn-block text-left bbs" type="button" data-toggle="collapse" data-target="#collapse-{{board.id}}" aria-expanded="true" aria-controls="collapse-{{board.id}}">
-            <div class="media">
-              <img src="{% static 'img/default.png' %}" class="mr-3 profile-img" width="85" height="85" />
-              <div class="media-body">
-                <div class="row">
-                  <p class="col-lg-2">LIKE <span class="badge badge-pill badge-primary">{{board.like.count}}</span></p>
-                  <h5 class="col-lg-8 mt-0 font-weight-bolder">{{board.title}}</h5>
-                  <p class="col-lg-2 text-center font-weight-bolder">{{board.writer.username}}</p>
-                </div>
-                <div class="row">
-                  <p class="col-lg-6 font-weight-lighter">#abc #java #python 태그반복 필요</p>
-                  <p class="col-lg-4">{{board_created}}</p>
-                </div>
-              </div>
-            </div>
-          </button>
-        </h2>
-      </div>
-      <div id="collapse-{{board.id}}" class="collapse" aria-labelledby="heading-{{board.id}}" data-parent="#bbs">
-        <div class="card-body">{{board.content}}</div>
-      </div>
-      {% endfor %}
+    <div class="btn-row">
+      <button type="button" class="btn btn-outline-primary m-2 btn-block side-menu">Bot</button>
     </div>
   </div>
 </div>
 {% endblock %} {% block script %}
+
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script src="{% static 'js/infinite-scroll.js' %}"></script>
-<script></script>
+<script>
+  // 스크롤 구현
+  $(function () {
+
+    let content = $(".content");
+    let id = "";
+    var $win = $(window);
+    // 최초 페이지 로딩 시 1회 실행
+    $.getJSON({
+      url: "/board/api/" + id.substring(id.indexOf("?")),
+      success: function (result) {
+        if(result.next){
+          id = result.next;
+        }else{
+          return;
+        }
+        content.append(scrollData(result));
+      },
+    });
+
+    // 스크롤 이후 동작
+    $win.scroll(
+      debounce(function () {
+        var diff = $(document).height() - $win.height() - 50;
+        if (diff < $win.scrollTop()) {
+          $.getJSON({
+            url: "/board/api/" + id.substring(id.indexOf("?")),
+            success: function (result) {
+              console.log(result)
+              if(result.next){
+                id = result.next;
+              }else{
+                return;
+              }
+              content.append(scrollData(result));
+            },
+          });
+        }
+      }, 1500)
+    );
+  });
+
+  const scrollData = (result) => {
+    str = '';
+    // 태그 분석 부분
+    str +=
+      '<div class="d-flex justify-content-center text-center tags-analyze">'+
+        '<div class="m-4">'+
+          '<h4>태그 통계</h4>'+
+          '<div><img class="figure-img img-fluid rounded" src="https://via.placeholder.com/450x250" /></div>'+
+        '</div>'+
+        '<div class="m-4">'+
+          '<h4>태그 단어</h4>'+
+          '<div><img class="figure-img img-fluid rounded" src="https://via.placeholder.com/450x250" /></div>'+
+        '</div>'+
+      '</div>'+
+      '<hr />'
+    ;
+
+    str += '<div class="container">';
+
+    // 게시판 내용 부분
+    result.results.forEach((currentElement, index, array) => {
+      str +=
+        '<div id="heading-' + currentElement.id + '">'+
+          '<h2 class="mb-0">'+
+            '<button class="btn btn-block text-left bbs" type="button" data-toggle="collapse" data-target="#collapse-' + currentElement.id + '" aria-expanded="true" aria-controls="collapse-' + currentElement.id + '">'+
+              '<div class="media">'+
+                '<img src="{% static 'img/default.png' %}" class="mr-3 profile-img" width="75em" height="75em" />'+
+                '<div class="media-body">'+
+                  '<div class="row">'+
+                    '<p class="col-lg-2">LIKE <span class="badge badge-pill badge-primary">' + currentElement.like.length + '</span></p>'+
+                    '<h5 class="col-lg-8 mt-0 font-weight-bolder">' + currentElement.title + '</h5>'+
+                    '<p class="col-lg-2 text-center font-weight-bolder">' + currentElement.writer.username + '</p>'+
+                  '</div>'+
+                  '<div class="row">'+
+                    '<p class="col-lg-6 font-weight-lighter">#abc #java #python 태그반복 필요</p>'+
+                    '<p class="col-lg-4">' + currentElement.created + '</p>'+
+                  '</div>'+
+                '</div>'+
+              '</div>'+
+            '</button>'+
+          '</h2>'+
+        '</div>'+
+        '<div id="collapse-' + currentElement.id + '" class="collapse" aria-labelledby="heading-' + currentElement.id + '" data-parent="#bbs">'+
+          '<div class="card-body">' + currentElement.content + '</div>'+
+        '</div>'
+      ;
+    });
+    str += '</div>';
+    return str;
+  }
+
+  var quill = new Quill('#editor', {
+    theme: 'snow'
+  });
+</script>
+{% endblock %}
+<!-- Modal -->
+{% block modal %}
+<div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title ml-3" id="staticBackdropLabel">New Board</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="title" class="modal-title ml-3"><h5>Title</h5></label>
+          <input type="text" name="title" id="title" class="form-control" />
+        </div>
+        <hr />
+        <div id="editor"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">save</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
