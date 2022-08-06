@@ -6,3 +6,14 @@ const debounce = (event, delay) => {
     timeoutId = setTimeout(event.bind(null, ...args), delay);
   };
 };
+
+// 게시글의 Quill JSON 데이터 가져오기
+function getContent(id) {
+  $.getJSON({
+    url: "/board/api/" + id,
+    success: function (result) {
+      quill.setContents(result.content.ops);
+      $(".quill-content-" + id).html(quill.root.innerHTML);
+    },
+  });
+}

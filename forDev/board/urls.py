@@ -10,4 +10,5 @@ urlpatterns = [
     path("api/", IndexView.as_view()),
     path("api/<int:id>", ContentView.as_view()),
     path("", base_views.index, name="index"),
+    path("insert/", base_views.insert_board, name="insert")
 ]
