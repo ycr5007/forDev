@@ -53,6 +53,8 @@ body::-webkit-scrollbar-track {
   font-size: 16px;
 }
 
+/* ------------------------------ base ------------------------------ */
+
 .bbs:hover {
   border: 1px solid #afccff;
 }
@@ -78,4 +80,14 @@ body::-webkit-scrollbar-track {
 .quill-content {
   background-color: #d3e3ff;
   border-radius: 5px;
+}
+
+/* ------------------------------ Login ------------------------------ */
+.user-box {
+  width: 45%;
+  padding: 10% 0;
+}
+
+.user-header {
+  padding-bottom: 25px;
 }

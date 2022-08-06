@@ -131,7 +131,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # 로그인 성공 시 이동할 URL 지정
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/board/"
 
 # 로그아웃 성공 시 이동할 URL 지정
-LOGOUT_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/user/login/"

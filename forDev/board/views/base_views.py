@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 import json
 
 from ..models import Board
@@ -26,6 +27,7 @@ class ContentView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@login_required(login_url="user:login")
 def index(request):
     return render(request, "board/index.html")
 
