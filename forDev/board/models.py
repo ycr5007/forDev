@@ -10,7 +10,7 @@ class Board(models.Model):
         User, on_delete=models.CASCADE, related_name="write_board"
     )
     created = models.DateTimeField(auto_now_add=True)
-    content = models.TextField()
+    content = models.JSONField()
     like = models.ManyToManyField(
         User, related_name="like_board", blank=True, null=True
     )

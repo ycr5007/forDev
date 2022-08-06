@@ -20,6 +20,20 @@ body {
   font-family: melody;
 }
 
+body::-webkit-scrollbar {
+  width: 6px; /* 스크롤바의 너비 */
+}
+
+body::-webkit-scrollbar-thumb {
+  height: 40%; /* 스크롤바의 길이 */
+  background: #217af4; /* 스크롤바의 색상 */
+  border-radius: 10px;
+}
+
+body::-webkit-scrollbar-track {
+  background: rgba(174, 207, 253, 0.1); /*스크롤바 뒷 배경 색상*/
+}
+
 .navbar {
   position: fixed;
   background-color: #cdf0ea;
@@ -45,4 +59,18 @@ body {
 
 .profile-img {
   border-radius: 30px;
+}
+
+.tags-analyze > div {
+  display: inline-block;
+}
+
+.side-btn {
+  position: fixed;
+  right: -0.75%;
+  bottom: 20%;
+}
+
+.side-menu:hover {
+  transform: scaleX(1.6);
 }
