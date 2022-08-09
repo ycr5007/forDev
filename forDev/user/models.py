@@ -8,7 +8,9 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
     profile = models.CharField(max_length=256)
-    image = models.ImageField(upload_to="profile/%Y/%M/%D", default="default.png")
+    image = models.FileField(
+        upload_to="profile/%Y/%M/%D", default="profile/default.png"
+    )
 
 
 @receiver(post_save, sender=User)

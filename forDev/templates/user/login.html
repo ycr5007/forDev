@@ -6,21 +6,21 @@
   <hr />
   <div class="user-box">
     <div class="user-header text-center">
-      <h2>Login</h2>
+      <h2><b>Login</b></h2>
     </div>
-    <form action="" method="post">
+    <form action="" method="post" id="userForm">
       {% csrf_token %}
       <div class="form-group m-4">{% include 'form_errors.html' %}</div>
       <div class="form-group m-4">
-        <label for="username">ID</label>
+        <label for="username"><b>ID</b></label>
         <input type="text" name="username" id="username" class="form-control" />
       </div>
       <div class="form-group m-4">
-        <label for="password">Password</label>
+        <label for="password"><b>Password</b></label>
         <input type="password" name="password" id="password" class="form-control" />
       </div>
       <div class="form-group m-4">
-        <button type="submit" class="btn btn-outline-primary btn-sm btn-block">Login</button>
+        <button type="submit" class="btn btn-outline-primary btn-sm btn-block login">Login</button>
         <p class="d-flex justify-content-between m-1">
           <a href="{% url 'user:signup' %}" class="text-decoration-none">회원가입</a>
           <a href="#" class="text-decoration-none">아이디/비밀번호 찾기</a>
@@ -29,4 +29,27 @@
     </form>
   </div>
 </div>
+{% endblock %} {% block script %}
+
+<script>
+  $(function () {
+    $(".login").click(function (e) {
+      e.preventDefault();
+      $.ajax({
+        url: "/user/login_token/",
+        type: "post",
+        data: {
+          username: $("#username").val(),
+          password: $("#password").val(),
+        },
+        dataType: "json",
+        success: function (result) {
+          console.log(result);
+          location.href = "/board/";
+        },
+        error: function () {},
+      });
+    });
+  });
+</script>
 {% endblock %}

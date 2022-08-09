@@ -1,0 +1,54 @@
+{% extends 'base.html' %} {% load static %}
+
+<!-- Content -->
+{% block content %}
+<div class="content d-flex justify-content-center">
+  <hr />
+  <div class="user-box">
+    <div class="user-header text-center">
+      <h2><b>MyPage</b></h2>
+    </div>
+    <form action="" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group m-4">{% include 'form_errors.html' %}</div>
+      <div class="form-group m-4">
+        <label for="username"><b>ID</b></label>
+        <input type="text" class="form-control" name="username" id="username" value="{{ user.username }}" readonly />
+      </div>
+      <div class="form-group m-4">
+        <label for="password1"><b>Password</b></label>
+        <input type="password" name="password1" id="password1" class="form-control" placeholder="PASSOWRD" />
+      </div>
+      <div class="form-group m-4">
+        <label for="password2"><b>Password Check</b></label>
+        <input type="password" name="password2" id="password2" class="form-control" placeholder="PASSOWRD CHECK" />
+      </div>
+      <div class="form-group m-4">
+        <label for="email"><b>Email</b></label>
+        <input type="email" name="email" id="email" class="form-control" value="{{ user.email }}" />
+      </div>
+      <div class="form-group m-4">
+        <label for="profile"><b>Profile</b></label>
+        <textarea name="profile" id="profile" rows="5" class="form-control" style="resize: none">{{ user.profile.profile }}</textarea>
+      </div>
+      <div class="form-group m-4">
+        <div class="custom-file">
+          <input type="file" class="custom-file-input" id="image" aria-describedby="image" />
+          <label class="custom-file-label" for="image">{{ user.profile.image }}</label>
+        </div>
+      </div>
+      <div class="form-group m-4">
+        <button type="submit" class="btn btn-outline-primary btn-sm btn-block">Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %} {% block script %}
+<script>
+  $(function () {
+    $("#image").change(function () {
+      $(".custom-file").find("label").text($("#image").val());
+    });
+  });
+</script>
+{% endblock %}

@@ -6,27 +6,62 @@
   <hr />
   <div class="user-box">
     <div class="user-header text-center">
-      <h2>SignUp</h2>
+      <h2><b>SignUp</b></h2>
     </div>
-    <hr />
-    <form action="" method="post">
+    <form action="" method="post" id="userForm">
       {% csrf_token %}
-      <div class="form-group">
-        <label for="username">ID</label>
-        <hr />
-        <input type="text" name="username" id="username" class="form-control" />
+      <div class="form-group m-4">{% include 'form_errors.html' %}</div>
+      <div class="form-group m-4">
+        <label for="username"><b>ID</b></label>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="ID" aria-describedby="button-addon2" name="username" id="username" value="{{ form.username.value | default_if_none:''}}" />
+          <div class="input-group-append">
+            <button class="btn btn-outline-info" style="z-index: 0" type="button" id="button-addon2">중복체크</button>
+          </div>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="password1">Password</label>
-        <hr />
-        <input type="text" name="password1" id="password1" class="form-control" />
+      <div class="form-group m-4">
+        <label for="password1"><b>Password</b></label>
+        <input type="password" name="password1" id="password1" class="form-control" placeholder="PASSOWRD" />
       </div>
-      <div class="form-group">
-        <label for="password2">Check Password</label>
-        <hr />
-        <input type="text" name="password2" id="password2" class="form-control" />
+      <div class="form-group m-4">
+        <label for="password2"><b>Password Check</b></label>
+        <input type="password" name="password2" id="password2" class="form-control" placeholder="PASSOWRD CHECK" />
+      </div>
+      <div class="form-group m-4">
+        <label for="email"><b>Email</b></label>
+        <input type="email" name="email" id="email" class="form-control" placeholder="example@example.com" value="{{ form.email.value | default_if_none:''}}" />
+      </div>
+      <div class="form-group m-4">
+        <button type="submit" class="btn btn-outline-primary btn-sm btn-block signup">SignUp</button>
       </div>
     </form>
   </div>
 </div>
+{% endblock %} {% block script %}
+<script>
+  $(function () {
+    $(".signup").click(function (e) {
+      e.preventDefault();
+      $.ajax({
+        url: "/user/register/",
+        type: "post",
+        data: {
+          username: $("#username").val(),
+          password: $("#password1").val(),
+          password2: $("#password2").val(),
+          email: $("#email").val(),
+        },
+        dataType: "json",
+        success: function (result) {
+          alert("성공적으로 가입되었습니다.");
+          location.href = "/board/";
+        },
+        error: function (fqXHR, error) {
+          console.log(error);
+        },
+      });
+    });
+  });
+</script>
 {% endblock %}

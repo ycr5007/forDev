@@ -26,6 +26,12 @@
   <input type="hidden" name="title" id="boardTitle" />
   <input type="hidden" name="content" id="boardContent" />
 </form>
+<!-- Spinner 로딩 표시 -->
+<div class="d-flex justify-content-center">
+  <div class="spinner-grow text-warning" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
 {% endblock %} {% block script %}
 
 <script src="{% static 'js/quill.js' %}"></script>
@@ -58,6 +64,9 @@
     theme: 'snow'
   });
 
+  // Loading 스피너
+  let spinner = document.getElementById('spinner');
+
   // 스크롤 구현
   $(function () {
 
@@ -80,6 +89,7 @@
     // 스크롤 이후 동작
     $win.scroll(
       debounce(function () {
+
         var diff = $(document).height() - $win.height() - 50;
         if (diff < $win.scrollTop()) {
           $.getJSON({
@@ -140,7 +150,7 @@
           '<h2 class="mb-0">'+
             '<button class="btn btn-block text-left bbs" type="button" data-toggle="collapse" data-target="#collapse-' + currentElement.id + '" aria-expanded="true" aria-controls="collapse-' + currentElement.id + '" onclick="getContent(' + currentElement.id + ')">'+
               '<div class="media">'+
-                '<img src="{% static 'img/default.png' %}" class="mr-3 profile-img" width="75em" height="75em" />'+
+                '<img src="' + currentElement.writer.profile.image + '" class="mr-3 profile-img" width="75em" height="75em" />'+
                 '<div class="media-body">'+
                   '<div class="row">'+
                     '<p class="col-lg-2">LIKE <span class="badge badge-pill badge-primary">' + currentElement.like.length + '</span></p>'+
