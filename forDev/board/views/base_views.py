@@ -9,7 +9,6 @@ import json
 from ..models import Board
 from ..paginations import MyCursorPagination
 from ..serializers import BoardContentSerializer, BoardSerializer
-from ..forms import BoardForm
 
 
 class IndexView(generics.ListAPIView):
@@ -38,6 +37,7 @@ def insert_board(request):
         board.title = request.POST.get("title")
         board.content = {"ops": json.loads(request.POST.get("content"))}
         board.writer = request.user
+        board.tags = request.POST.get("tags")
         board.save()
     return redirect("board:index")
 

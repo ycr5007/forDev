@@ -25,6 +25,7 @@
   {% csrf_token %}
   <input type="hidden" name="title" id="boardTitle" />
   <input type="hidden" name="content" id="boardContent" />
+  <input type="hidden" name="tags" id="boardTags" />
 </form>
 <!-- Spinner 로딩 표시 -->
 <div class="d-flex justify-content-center">
@@ -40,13 +41,12 @@
 
   // Quill Toolbar Option
   var toolbarOptions = [
-    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+    ['bold', 'italic', 'underline', 'strike', 'code'],        // toggled buttons
 
     [{ 'header': 1 }, { 'header': 2 }],               // custom button values
     [{ 'list': 'ordered'}, { 'list': 'bullet' }],
     [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
     [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-    [{ 'direction': 'rtl' }],                         // text direction
 
     [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
 
@@ -61,6 +61,7 @@
     modules: {
       toolbar: toolbarOptions
     },
+    placeholder: '"</>" 속성으로 블록을 지정하면, 태그로 등록이 됩니다...',
     theme: 'snow'
   });
 
@@ -118,8 +119,25 @@
 
       content = quill.getContents()
       $("#boardTitle").val($("#title").val());
+      let tags = "";
+      var flag = false;
+      content.ops.forEach(element => {
+        if(element.attributes){
+          if(element.attributes.code){
+            tags += "#" + element.insert;
+            element.insert = "<# " + element.insert + " >"
+            if(tags.length >= 120){
+              alert("태그가 너무 많습니다.")
+              flag = true;
+            }
+          }
+        }
+      })
+      if(flag){
+        return;
+      }
       $("#boardContent").val(JSON.stringify(content.ops));
-
+      $("#boardTags").val(tags)
       $("#boardInsertForm").submit();
     })
   });
@@ -194,12 +212,14 @@
         </div>
         <hr />
         <div id="editor"></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary board-insert">save</button>
+        <hr />
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary board-insert">save</button>
+        </div>
       </div>
     </div>
   </div>
+  {% endblock %}
 </div>
-{% endblock %}

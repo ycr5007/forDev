@@ -21,7 +21,16 @@ class UserSerializer(serializers.ModelSerializer):
 
 class BoardSerializer(serializers.ModelSerializer):
     writer = UserSerializer(many=False, read_only=True)
-    # wirter_name = serializers.CharField(source="writer.username", read_only=True)
+    # 태그 통계
+    tag_cnt = serializers.SerializerMethodField("tag_cnt")
+    # 태그 단어
+    tag_word = serializers.SerializerMethodField("tag_word")
+
+    def tag_cnt(self, board):
+        pass
+
+    def tag_word(self, board):
+        pass
 
     class Meta:
         model = Board
@@ -32,6 +41,8 @@ class BoardSerializer(serializers.ModelSerializer):
             "like",
             "writer",
             "tags",
+            "tag_cnt",
+            "tag_word",
         ]
 
 
