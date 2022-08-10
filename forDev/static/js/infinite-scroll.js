@@ -64,7 +64,8 @@ const getTagCount = (result) => {
       for (let [key, value] of Object.entries(tagList)) {
         if (key == element) {
           tagList[key] = Number(value) + 1;
-        } else {
+          return;
+        } else if (!Object.keys(tagList).includes(element)) {
           tagList[element] = 1;
         }
       }

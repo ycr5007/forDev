@@ -36,8 +36,11 @@
 {% endblock %} {% block script %}
 
 <script src="{% static 'js/quill.js' %}"></script>
-<script src="{% static 'js/infinite-scroll.js' %}"></script>
 <script src="{% static 'js/Chart.min.js' %}"></script>
+<script src="{% static 'js/d3.v3.min.js' %}"></script>
+<script src="{% static 'js/d3.layout.cloud.js' %}" type="text/JavaScript"></script>
+<script src="{% static 'js/infinite-scroll.js' %}"></script>
+
 <script>
   // Quill Toolbar Option
   var toolbarOptions = [
@@ -69,24 +72,24 @@
   let spinner = document.getElementById('spinner');
 
   // 스크롤 구현
+  let id = "";
   $(function () {
     let content = $(".content");
-    let id = "";
     var $win = $(window);
     // 최초 페이지 로딩 시 1회 실행
     $.getJSON({
       url: "/board/api/" + id.substring(id.indexOf("?")),
       success: function (result) {
-        console.log(result)
         if(result.next){
           id = result.next;
         }else{
           return;
         }
         let tagList = getTagCount(result);
-        console.log(tagList);
         content.append(scrollData(result));
         drawBarChart(result, tagList)
+        // drawWordCloud(result, tagList)
+        drawWordCloud(result, tagList)
       },
     });
 
@@ -99,14 +102,15 @@
           $.getJSON({
             url: "/board/api/" + id.substring(id.indexOf("?")),
             success: function (result) {
-              console.log(result)
               if(result.next){
                 id = result.next;
               }else{
                 return;
               }
+              let tagList = getTagCount(result);
               content.append(scrollData(result));
-              drawBarChart(result)
+              drawBarChart(result, tagList);
+              drawWordCloud(result, tagList);
             },
           });
         }
@@ -151,9 +155,11 @@
     // 태그 분석 부분
     str +=
       '<div class="d-flex justify-content-center text-center tags-analyze">'+
-        '<canvas id="bar-chart-' + result.next.substring(result.next.indexOf("=") + 1) + '" width="450" height="250"></canvas>'+
-        '<div class="m-4">'+
-          '<div><img class="figure-img img-fluid rounded" src="{% static 'img/450x250.png' %}" /></div>'+
+        '<div class="m-2">'+
+          '<canvas id="bar-chart-' + result.next.substring(result.next.indexOf("=") + 1) + '" width="450" height="250"></canvas>'+
+        '</div>'+
+        '<div class="m-2">'+
+          '<svg id="wordcloud-' + result.next.substring(result.next.indexOf("=") + 1) + '" class="wordcloud" width="450" height="250">'+
         '</div>'+
       '</div>'+
       '<hr />'
@@ -163,6 +169,12 @@
 
     // 게시판 내용 부분
     result.results.forEach((currentElement, index, array) => {
+      tags = "";
+      if(currentElement.tags){
+        for(tag of currentElement.tags){
+          tags += "#" + tag + " "
+        }
+      }
       str +=
         '<div id="heading-' + currentElement.id + '">'+
           '<h2 class="mb-0">'+
@@ -176,7 +188,7 @@
                     '<p class="col-lg-2 text-center font-weight-bolder">' + currentElement.writer.username + '</p>'+
                   '</div>'+
                   '<div class="row">'+
-                    '<p class="col-lg-6 font-weight-lighter">#abc #java #python 태그반복 필요</p>'+
+                    '<p class="col-lg-6 font-weight-lighter">' + tags +'</p>'+
                     '<p class="col-lg-4">' + currentElement.created + '</p>'+
                   '</div>'+
                 '</div>'+
@@ -192,7 +204,52 @@
     str += '</div>';
     return str;
   }
+  var color = d3.scale.linear()
+          .domain([0,1,2,3,4,5,6,10,15,20,100])
+          .range(["#d33", "#c44", "#b11", "#a93", "#389", "#81f", "#73f", "#6f6", "#055", "#434", "#533", "#292"]);
+  function drawWordCloud(result, tagList){
+    console.log(tagList)
+    let data = new Array();
+    for (let [key, value] of Object.entries(tagList)) {
+      var obj = new Object();
+      obj.text = key;
+      obj.value = value;
+
+      data.push(obj);
+    }
+    console.log(data)
+
+    d3.layout.cloud().size([450, 250])
+            .words(data)
+            .padding(0.2)
+            .rotate(function () {
+              return ~~(Math.random() * 2) * 90;
+            })
+            .fontSize(function(d) { return (d.value + 30 * 2) / 2; })
+            .on("end", draw)
+            .start();
+  }
+
+  function draw(words, pos) {
+      console.log(words)
+      console.log(pos)
+      console.log(id) 
+      d3.select("#wordcloud-" + id.substring(id.indexOf("=") + 1)).append("g")
+        // without the transform, words words would get cutoff to the left and top, they would
+        // appear outside of the SVG area
+        .attr("transform", "translate(250,150)")
+        .selectAll("text")
+        .data(words)
+        .enter().append("text")
+        .style("font-size", function(d) { return (d.size) + "px"; })
+        .style('font-family', 'Impact')
+        .style("fill", function(d, i) { return color(i); })
+        .attr("text-anchor", "middle")
+        .attr("transform", (d) => "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")")
+        .text(function(d) { return d.text; });
+  }
 </script>
+
 {% endblock %}
 <!-- Modal -->
 {% block modal %}
