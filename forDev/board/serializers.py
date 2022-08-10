@@ -5,6 +5,11 @@ from user.models import Profile
 from django.contrib.auth.models import User
 
 
+class TagsSerializer(serializers.BaseSerializer):
+    def to_representation(self, obj):
+        return obj.split("#")[1:]
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
@@ -21,16 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class BoardSerializer(serializers.ModelSerializer):
     writer = UserSerializer(many=False, read_only=True)
-    # 태그 통계
-    tag_cnt = serializers.SerializerMethodField("tag_cnt")
-    # 태그 단어
-    tag_word = serializers.SerializerMethodField("tag_word")
-
-    def tag_cnt(self, board):
-        pass
-
-    def tag_word(self, board):
-        pass
+    tags = TagsSerializer()
 
     class Meta:
         model = Board
@@ -41,8 +37,6 @@ class BoardSerializer(serializers.ModelSerializer):
             "like",
             "writer",
             "tags",
-            "tag_cnt",
-            "tag_word",
         ]
 
 

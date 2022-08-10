@@ -37,8 +37,8 @@
 
 <script src="{% static 'js/quill.js' %}"></script>
 <script src="{% static 'js/infinite-scroll.js' %}"></script>
+<script src="{% static 'js/Chart.min.js' %}"></script>
 <script>
-
   // Quill Toolbar Option
   var toolbarOptions = [
     ['bold', 'italic', 'underline', 'strike', 'code'],        // toggled buttons
@@ -70,7 +70,6 @@
 
   // 스크롤 구현
   $(function () {
-
     let content = $(".content");
     let id = "";
     var $win = $(window);
@@ -78,12 +77,16 @@
     $.getJSON({
       url: "/board/api/" + id.substring(id.indexOf("?")),
       success: function (result) {
+        console.log(result)
         if(result.next){
           id = result.next;
         }else{
           return;
         }
+        let tagList = getTagCount(result);
+        console.log(tagList);
         content.append(scrollData(result));
+        drawBarChart(result, tagList)
       },
     });
 
@@ -103,6 +106,7 @@
                 return;
               }
               content.append(scrollData(result));
+              drawBarChart(result)
             },
           });
         }
@@ -147,12 +151,8 @@
     // 태그 분석 부분
     str +=
       '<div class="d-flex justify-content-center text-center tags-analyze">'+
+        '<canvas id="bar-chart-' + result.next.substring(result.next.indexOf("=") + 1) + '" width="450" height="250"></canvas>'+
         '<div class="m-4">'+
-          '<h4>태그 통계</h4>'+
-          '<div><img class="figure-img img-fluid rounded" src="{% static 'img/450x250.png' %}" /></div>'+
-        '</div>'+
-        '<div class="m-4">'+
-          '<h4>태그 단어</h4>'+
           '<div><img class="figure-img img-fluid rounded" src="{% static 'img/450x250.png' %}" /></div>'+
         '</div>'+
       '</div>'+
