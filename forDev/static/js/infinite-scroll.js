@@ -45,6 +45,16 @@ function drawBarChart(result, tagList) {
         display: true,
         text: "<#> Tag 통계",
       },
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              min: 0,
+              fontSize: 13,
+            },
+          },
+        ],
+      },
     },
   });
 }

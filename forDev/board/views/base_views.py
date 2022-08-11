@@ -75,6 +75,13 @@ def insert_board(request):
     return redirect("board:index")
 
 
+class ContentView(APIView):
+    def get(self, request, id):
+        board = get_object_or_404(Board, pk=id)
+        serializer = BoardContentSerializer(board)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 # def test(request):
 #     for i in range(100):
 #         test_board = Board()

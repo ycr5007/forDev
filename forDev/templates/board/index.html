@@ -16,9 +16,6 @@
     <div class="btn-row">
       <a class="btn btn-outline-primary m-2 btn-block side-menu" href="#">Top</a>
     </div>
-    <div class="btn-row">
-      <button type="button" class="btn btn-outline-primary m-2 btn-block side-menu">Bot</button>
-    </div>
   </div>
 </div>
 <form action="{% url 'board:insert' %}" method="post" id="boardInsertForm">
@@ -148,7 +145,14 @@
       $("#boardTags").val(tags)
       $("#boardInsertForm").submit();
     })
+
+
   });
+
+  // 추천버튼 Click
+  function recommend(boardId){
+    console.log(boardId)
+  }
 
   const scrollData = (result) => {
     str = '';
@@ -189,7 +193,7 @@
                   '</div>'+
                   '<div class="row">'+
                     '<p class="col-lg-6 font-weight-lighter">' + tags +'</p>'+
-                    '<p class="col-lg-4">' + currentElement.created + '</p>'+
+                    '<p class="col-lg-4">' + getYmd10(new Date(currentElement.created)) + '</p>'+
                   '</div>'+
                 '</div>'+
               '</div>'+
@@ -197,6 +201,10 @@
           '</h2>'+
         '</div>'+
         '<div id="collapse-' + currentElement.id + '" class="collapse" aria-labelledby="heading-' + currentElement.id + '" data-parent="#bbs">'+
+          '<div class="d-flex justify-content-right">'+
+            '<button type="button" class="btn btn-primary btn-xs m-2" onclick="recommend(' + currentElement.id + ')">추천</button>'+
+            '<button type="button" class="btn btn-primary btn-xs m-2">작성자 정보</button>'+
+          '</div>'+
           '<div class="ql-editor quill-content-' + currentElement.id + ' quill-content"></div>'+
         '</div>'
       ;
@@ -204,6 +212,7 @@
     str += '</div>';
     return str;
   }
+
   var color = d3.scale.linear()
           .domain([0,1,2,3,4,5,6,10,15,20,100])
           .range(["#d33", "#c44", "#b11", "#a93", "#389", "#81f", "#73f", "#6f6", "#055", "#434", "#533", "#292"]);
@@ -247,6 +256,11 @@
         .attr("text-anchor", "middle")
         .attr("transform", (d) => "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")")
         .text(function(d) { return d.text; });
+  }
+
+  //yyyy-mm-dd 포맷 날짜 생성
+  function getYmd10(d) {
+    return d.getFullYear() + "-" + ((d.getMonth() + 1) > 9 ? (d.getMonth() + 1).toString() : "0" + (d.getMonth() + 1)) + "-" + (d.getDate() > 9 ? d.getDate().toString() : "0" + d.getDate().toString());
   }
 </script>
 
